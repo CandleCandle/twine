@@ -2,7 +2,7 @@ package uk.me.candle.twine;
 
 import java.nio.ByteBuffer;
 
-public class ByteBufferSliceable implements Sliceable {
+public class ByteBufferSliceable implements Sliceable<ByteBufferSliceable> {
 
     private final ByteBuffer wrapped;
 
@@ -12,7 +12,7 @@ public class ByteBufferSliceable implements Sliceable {
     }
 
     @Override
-    public Sliceable slice(int offset, int length) {
+    public ByteBufferSliceable slice(int offset, int length) {
         wrapped.position(offset);
         ByteBuffer result = wrapped.slice();
         result.limit(length);

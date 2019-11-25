@@ -1,8 +1,8 @@
 package uk.me.candle.twine;
 
-public interface Sliceable {
+public interface Sliceable<E extends Sliceable> {
 
-    Sliceable slice(int offset, int length);
+    E slice(int offset, int length);
 
     int size();
 }

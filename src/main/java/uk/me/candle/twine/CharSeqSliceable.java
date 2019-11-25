@@ -1,6 +1,6 @@
 package uk.me.candle.twine;
 
-public class CharSeqSliceable implements Sliceable {
+public class CharSeqSliceable implements Sliceable<CharSeqSliceable> {
 
     private final CharSequence wrapped;
 
@@ -14,7 +14,7 @@ public class CharSeqSliceable implements Sliceable {
     }
 
     @Override
-    public Sliceable slice(int offset, int length) {
+    public CharSeqSliceable slice(int offset, int length) {
         return new CharSeqSliceable(wrapped.subSequence(offset, offset + length));
     }
 

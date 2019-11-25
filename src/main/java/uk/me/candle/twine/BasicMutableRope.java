@@ -8,41 +8,41 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
-public class BasicMutableRope implements Rope {
+public class BasicMutableRope<T extends Sliceable> implements Rope<T> {
 
-    private RopeNode root;
+    private RopeNode<T> root;
 
-    public BasicMutableRope(Sliceable... initialElements) {
-        for (Sliceable element : initialElements) {
+    public BasicMutableRope(T... initialElements) {
+        for (T element : initialElements) {
             if (root == null) {
-                root = new LeafRopeNode(element);
+                root = new LeafRopeNode<>(element);
             } else {
-                this.root = new IntermediateRopeNode(this.root, new LeafRopeNode(element));
+                this.root = new IntermediateRopeNode<>(this.root, new LeafRopeNode<>(element));
             }
         }
     }
 
     @Override
-    public Rope insert(int offset, Sliceable slice) {
-        Rope[] ends = split(offset);
-        return ends[0].append(slice).append(ends[1]);
+    public Rope<T> insert(int offset, T slice) {
+        List<Rope<T>> ends = split(offset);
+        return ends.get(0).append(slice).append(ends.get(1));
     }
 
     @Override
-    public Rope insert(int offset, Rope slice) {
-        Rope[] ends = split(offset);
-        return ends[0].append(slice).append(ends[1]);
+    public Rope<T> insert(int offset, Rope<T> slice) {
+        List<Rope<T>> ends = split(offset);
+        return ends.get(0).append(slice).append(ends.get(1));
     }
 
     @Override
-    public Rope delete(int offset, int length) {
-        Rope[] first = split(offset);
-        Rope[] second = split(offset + length);
-        return first[0].append(second[1]);
+    public Rope<T> delete(int offset, int length) {
+        List<Rope<T>> first = split(offset);
+        List<Rope<T>> second = split(offset + length);
+        return first.get(0).append(second.get(1));
     }
 
     @Override
-    public Rope append(Rope other) {
+    public Rope<T> append(Rope other) {
         if (this.root == null) {
             this.root = ((BasicMutableRope)other).root;
         } else {
@@ -52,7 +52,7 @@ public class BasicMutableRope implements Rope {
     }
 
     @Override
-    public Rope append(Sliceable other) {
+    public Rope<T> append(Sliceable other) {
         if (this.root == null) {
             this.root = new LeafRopeNode(other);
         } else {
@@ -62,14 +62,14 @@ public class BasicMutableRope implements Rope {
     }
 
     @Override
-    public Rope[] split(int position) {
+    public List<Rope<T>> split(int position) {
         // first case: split point is on a boundary.
         // second case: split point is not on a boundary.
 
         int sizeFirst = 0;
-        BasicMutableRope first = new BasicMutableRope();
-        BasicMutableRope second = new BasicMutableRope();
-        for (Sliceable item : this) {
+        BasicMutableRope<T> first = new BasicMutableRope<>();
+        BasicMutableRope<T> second = new BasicMutableRope<>();
+        for (T item : this) {
             if (sizeFirst < position) {
                 int potentialNewLength = sizeFirst + item.size();
                 if (potentialNewLength < position) {
@@ -87,10 +87,10 @@ public class BasicMutableRope implements Rope {
                 second.append(item);
             }
         }
-        return new Rope[]{first, second};
+        return List.of(first, second);
     }
 
-    void printTree(PrintStream out) {
+    public void printTree(PrintStream out) {
         printTree(out, root, 0);
     }
     void printTree(PrintStream out, RopeNode node, int depth) {
@@ -99,15 +99,15 @@ public class BasicMutableRope implements Rope {
             line.append("  ");
         }
         if (node instanceof LeafRopeNode) {
-            line.append("|* (").append( ((LeafRopeNode)node).item.toString() ).append(')');
+            line.append("|* (").append( ((LeafRopeNode<T>)node).item.toString() ).append(')');
             out.println(line.toString());
         }
         if (node instanceof IntermediateRopeNode) {
-            IntermediateRopeNode intermediate = (IntermediateRopeNode)node;
-            line.append("|- (").append(intermediate.size ).append(')');
+            IntermediateRopeNode<T> intermediate = (IntermediateRopeNode<T>)node;
+            line.append("|- (").append(intermediate.size() ).append(')');
             out.println(line.toString());
-            printTree(out, intermediate.left, depth+1);
-            printTree(out, intermediate.right, depth+1);
+            printTree(out, intermediate.left(), depth+1);
+            printTree(out, intermediate.right(), depth+1);
         }
     }
 
@@ -118,65 +118,62 @@ public class BasicMutableRope implements Rope {
     }
 
     @Override
-    public Iterator<Sliceable> iterator() {
+    public Iterator<T> iterator() {
         if (root == null) return Collections.emptyIterator();
         // lazy-ish iterator, convert to a list first.
-        List<Sliceable> result = new ArrayList<>();
-        Deque<RopeNode> items = new ArrayDeque<>();
+        List<T> result = new ArrayList<>();
+        Deque<RopeNode<T>> items = new ArrayDeque<>();
         items.push(root);
         while (items.size() > 0) {
             RopeNode current = items.pop();
             if (current instanceof IntermediateRopeNode) {
-                items.push(((IntermediateRopeNode)current).right);
-                items.push(((IntermediateRopeNode)current).left);
+                items.push(((IntermediateRopeNode<T>)current).right);
+                items.push(((IntermediateRopeNode<T>)current).left);
             } else if (current instanceof LeafRopeNode) {
-                result.add(((LeafRopeNode)current).item);
+                result.add(((LeafRopeNode<T>)current).item());
             }
         }
         return result.iterator();
     }
 
-    interface RopeNode {
+    interface RopeNode<T extends Sliceable> {
         int size();
     }
 
-    static class IntermediateRopeNode implements RopeNode {
+    static class IntermediateRopeNode<T extends Sliceable> implements RopeNode<T> {
         final int size;
-        final RopeNode left;
-        final RopeNode right;
+        final RopeNode<T> left;
+        final RopeNode<T> right;
 
-        public IntermediateRopeNode(RopeNode left, RopeNode right) {
+        public IntermediateRopeNode(RopeNode<T> left, RopeNode<T> right) {
             this.left = left;
             this.right = right;
             this.size = left.size() + right.size();
         }
 
-        @Override
-        public int size() {
-            return size;
-        }
+        @Override public int size() { return size; }
+        public RopeNode<T> left() { return left; }
+        public RopeNode<T> right() { return right; }
     }
 
-    static class LeafRopeNode implements RopeNode {
-        final Sliceable item;
+    static class LeafRopeNode<T extends Sliceable> implements RopeNode<T> {
+        final T item;
 
-        public LeafRopeNode(Sliceable item) {
+        public LeafRopeNode(T item) {
             this.item = item;
         }
 
-        IntermediateRopeNode split(int offset) {
-            Sliceable l = item.slice(0, offset);
-            Sliceable r = item.slice(offset, item.size()-offset);
-            return new IntermediateRopeNode(
-                    new LeafRopeNode(l),
-                    new LeafRopeNode(r)
+        IntermediateRopeNode<T> split(int offset) {
+            T l = (T)item.slice(0, offset);
+            T r = (T)item.slice(offset, item.size()-offset);
+            return new IntermediateRopeNode<>(
+                    new LeafRopeNode<>(l),
+                    new LeafRopeNode<>(r)
             );
         }
 
-        @Override
-        public int size() {
-            return item.size();
-        }
+        @Override public int size() { return item.size(); }
+        public T item() { return item; }
     }
 }
 
