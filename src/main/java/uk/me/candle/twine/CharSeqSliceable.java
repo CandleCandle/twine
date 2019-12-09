@@ -1,11 +1,15 @@
 package uk.me.candle.twine;
 
-public class CharSeqSliceable implements Sliceable<CharSeqSliceable> {
+public class CharSeqSliceable implements Sliceable<Character, CharSeqSliceable> {
 
     private final CharSequence wrapped;
 
     public CharSeqSliceable(CharSequence wrapped) {
         this.wrapped = wrapped;
+    }
+
+    public Character get(int offset) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

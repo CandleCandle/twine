@@ -2,13 +2,18 @@ package uk.me.candle.twine;
 
 import java.nio.ByteBuffer;
 
-public class ByteBufferSliceable implements Sliceable<ByteBufferSliceable> {
+public class ByteBufferSliceable implements Sliceable<Byte, ByteBufferSliceable> {
 
     private final ByteBuffer wrapped;
 
 
     public ByteBufferSliceable(ByteBuffer wrapped) {
         this.wrapped = wrapped;
+    }
+
+    @Override
+    public Byte get(int offset) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

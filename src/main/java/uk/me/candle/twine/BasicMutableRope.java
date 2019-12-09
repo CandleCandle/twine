@@ -8,7 +8,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
-public class BasicMutableRope<T extends Sliceable> implements Rope<T> {
+public class BasicMutableRope<B, T extends Sliceable<B, T>> implements Rope<B, T> {
 
     private RopeNode<T> root;
 
@@ -23,26 +23,31 @@ public class BasicMutableRope<T extends Sliceable> implements Rope<T> {
     }
 
     @Override
-    public Rope<T> insert(int offset, T slice) {
-        List<Rope<T>> ends = split(offset);
+    public B get(int offset) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Rope<B, T> insert(int offset, T slice) {
+        List<Rope<B, T>> ends = split(offset);
         return ends.get(0).append(slice).append(ends.get(1));
     }
 
     @Override
-    public Rope<T> insert(int offset, Rope<T> slice) {
-        List<Rope<T>> ends = split(offset);
+    public Rope<B, T> insert(int offset, Rope<B, T> slice) {
+        List<Rope<B, T>> ends = split(offset);
         return ends.get(0).append(slice).append(ends.get(1));
     }
 
     @Override
-    public Rope<T> delete(int offset, int length) {
-        List<Rope<T>> first = split(offset);
-        List<Rope<T>> second = split(offset + length);
+    public Rope<B, T> delete(int offset, int length) {
+        List<Rope<B, T>> first = split(offset);
+        List<Rope<B, T>> second = split(offset + length);
         return first.get(0).append(second.get(1));
     }
 
     @Override
-    public Rope<T> append(Rope other) {
+    public Rope<B, T> append(Rope other) {
         if (this.root == null) {
             this.root = ((BasicMutableRope)other).root;
         } else {
@@ -52,7 +57,7 @@ public class BasicMutableRope<T extends Sliceable> implements Rope<T> {
     }
 
     @Override
-    public Rope<T> append(Sliceable other) {
+    public Rope<B, T> append(Sliceable other) {
         if (this.root == null) {
             this.root = new LeafRopeNode(other);
         } else {
@@ -62,13 +67,13 @@ public class BasicMutableRope<T extends Sliceable> implements Rope<T> {
     }
 
     @Override
-    public List<Rope<T>> split(int position) {
+    public List<Rope<B, T>> split(int position) {
         // first case: split point is on a boundary.
         // second case: split point is not on a boundary.
 
         int sizeFirst = 0;
-        BasicMutableRope<T> first = new BasicMutableRope<>();
-        BasicMutableRope<T> second = new BasicMutableRope<>();
+        BasicMutableRope<B, T> first = new BasicMutableRope<>();
+        BasicMutableRope<B, T> second = new BasicMutableRope<>();
         for (T item : this) {
             if (sizeFirst < position) {
                 int potentialNewLength = sizeFirst + item.size();
