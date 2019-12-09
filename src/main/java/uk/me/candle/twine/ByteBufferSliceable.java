@@ -13,7 +13,7 @@ public class ByteBufferSliceable implements Sliceable<Byte, ByteBufferSliceable>
 
     @Override
     public Byte get(int offset) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return wrapped.get(offset);
     }
 
     @Override

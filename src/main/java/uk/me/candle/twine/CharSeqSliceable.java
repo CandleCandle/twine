@@ -9,7 +9,7 @@ public class CharSeqSliceable implements Sliceable<Character, CharSeqSliceable> 
     }
 
     public Character get(int offset) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return wrapped.charAt(offset);
     }
 
     @Override
