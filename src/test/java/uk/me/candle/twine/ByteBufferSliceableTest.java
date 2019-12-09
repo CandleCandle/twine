@@ -2,9 +2,9 @@ package uk.me.candle.twine;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -55,6 +55,21 @@ public class ByteBufferSliceableTest {
                 ByteBuffer.wrap(new byte[]{0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A})
         );
         assertThat(undertest.size(), is(10));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getParams")
+    public void itCanAccessIndividualElements(byte[] input, int offset, byte expected) throws Exception {
+        ByteBufferSliceable undertest = new ByteBufferSliceable(ByteBuffer.wrap(input));
+        assertThat(undertest.get(offset), is(expected));
+    }
+
+    static Stream<Arguments> getParams() {
+        return Stream.of(
+            Arguments.of(new byte[]{0x65, 0x66, 0x67}, 1, (byte)0x66),
+            Arguments.of(new byte[]{0x61}, 0, (byte)0x61),
+            Arguments.of(new byte[]{0x67, 0x68, 0x69, 0x6A}, 3, (byte)0x6A)
+        );
     }
 
 }
