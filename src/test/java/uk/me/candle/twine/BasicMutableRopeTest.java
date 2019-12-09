@@ -4,7 +4,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Iterator;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  * This set of tests that could be made more generic and run against
