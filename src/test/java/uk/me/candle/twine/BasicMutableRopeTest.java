@@ -135,18 +135,33 @@ public class BasicMutableRopeTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getParams")
+    @MethodSource("itCanAccessIndividualElementsParams")
     public void itCanAccessIndividualElements(int offset, char expected, Rope<Character, CharSeqSliceable> input) throws Exception {
         assertThat(input.get(offset), is(expected));
     }
 
-    static Stream<Arguments> getParams() {
+    static Stream<Arguments> itCanAccessIndividualElementsParams() {
         return Stream.of(
             Arguments.of(0, 'a', new BasicMutableRope<>(new CharSeqSliceable("abcd"))),
             Arguments.of(0, 'e', new BasicMutableRope<>(new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
             Arguments.of(4, 'i', new BasicMutableRope<>(new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
             Arguments.of(5, 'f', new BasicMutableRope<>(new CharSeqSliceable("abcd"), new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
             Arguments.of(10, 'k', new BasicMutableRope<>(new CharSeqSliceable("abcd"), new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl")))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("itCanExtractSlicesParams")
+    public void itCanExtractSlices(int offset, int length, String expected, Rope<Character, CharSeqSliceable> input) throws Exception {
+        Rope<Character, CharSeqSliceable> result = input.slice(offset, length);
+        assertThat(ropeToString(result), is(expected));
+    }
+
+    static Stream<Arguments> itCanExtractSlicesParams() {
+        return Stream.of(
+            Arguments.of(0, 3, "abc", new BasicMutableRope<>(new CharSeqSliceable("abcd"))),
+            Arguments.of(0, 4, "efgh", new BasicMutableRope<>(new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
+            Arguments.of(3, 6, "defghi", new BasicMutableRope<>(new CharSeqSliceable("abcd"), new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl")))
         );
     }
 

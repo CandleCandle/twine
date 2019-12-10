@@ -109,6 +109,11 @@ public class BasicMutableRope<B, T extends Sliceable<B, T>> implements Rope<B, T
         return List.of(first, second);
     }
 
+    @Override
+    public Rope<B, T> slice(int offset, int length) {
+        return split(offset + length).get(0).split(offset).get(1);
+    }
+
     public void printTree(PrintStream out) {
         printTree(out, root, 0);
     }

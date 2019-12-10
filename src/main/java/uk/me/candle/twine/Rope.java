@@ -55,6 +55,14 @@ public interface Rope<B, T extends Sliceable<B, T>> extends Iterable<T> {
     List<Rope<B, T>> split(int position);
 
     /**
+     * Extracts a slice of this Rope.
+     * Does not modify <pre>this</pre>.
+     * @param offset starting position
+     * @param length number of elements to include.
+     * @return a new Rope that represents <pre>length</pre> the elements from <pre>offset</pre>.
+     */
+    Rope<B, T> slice(int offset, int length);
+    /**
      * Count of elements on this Rope.
      * @return the number of elements in this Rope.
      */
