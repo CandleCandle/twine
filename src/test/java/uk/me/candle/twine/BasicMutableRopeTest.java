@@ -1,10 +1,14 @@
 package uk.me.candle.twine;
 
-import static org.junit.Assert.assertThat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /*
  * This set of tests that could be made more generic and run against
@@ -130,10 +134,21 @@ public class BasicMutableRopeTest {
         assertThat(ropeToString(result), is("abcdehijkl"));
     }
 
-    // delete whole sliceable -> find sibling, replace parent with sibling.
-    // delete from start of sliceable -> replace tree node with smaller.
-    // delete from end of sliceable -> replace tree node with smaller.
-    // delete from middle of sliceable -> replace tree node with intermediate, each side is the L and R of the original sliceable.
+    @ParameterizedTest
+    @MethodSource("getParams")
+    public void itCanAccessIndividualElements(int offset, char expected, Rope<Character, CharSeqSliceable> input) throws Exception {
+        assertThat(input.get(offset), is(expected));
+    }
+
+    static Stream<Arguments> getParams() {
+        return Stream.of(
+            Arguments.of(0, 'a', new BasicMutableRope<>(new CharSeqSliceable("abcd"))),
+            Arguments.of(0, 'e', new BasicMutableRope<>(new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
+            Arguments.of(4, 'i', new BasicMutableRope<>(new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
+            Arguments.of(5, 'f', new BasicMutableRope<>(new CharSeqSliceable("abcd"), new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"))),
+            Arguments.of(10, 'k', new BasicMutableRope<>(new CharSeqSliceable("abcd"), new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl")))
+        );
+    }
 
     private String ropeToString(Rope<Character, CharSeqSliceable> undertest) {
         StringBuilder builder = new StringBuilder();

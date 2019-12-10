@@ -24,7 +24,21 @@ public class BasicMutableRope<B, T extends Sliceable<B, T>> implements Rope<B, T
 
     @Override
     public B get(int offset) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int position = offset;
+        RopeNode<T> current = root;
+        while (true) {
+            if (current instanceof IntermediateRopeNode) {
+                IntermediateRopeNode<T> cur = (IntermediateRopeNode<T>)current;
+                if (cur.left().size() > position) {
+                    current = cur.left();
+                } else {
+                    current = cur.right();
+                    position -= cur.left().size();
+                }
+            } else {
+                return ((LeafRopeNode<T>)current).item().get(position);
+            }
+        }
     }
 
     @Override
@@ -83,8 +97,8 @@ public class BasicMutableRope<B, T extends Sliceable<B, T>> implements Rope<B, T
                     sizeFirst = potentialNewLength;
                 } else {
                     IntermediateRopeNode split = new LeafRopeNode(item).split(position - sizeFirst);
-                    first.append(((LeafRopeNode)split.left).item);
-                    second.append(((LeafRopeNode)split.right).item);
+                    first.append(((LeafRopeNode)split.left()).item());
+                    second.append(((LeafRopeNode)split.right()).item());
                     sizeFirst = first.size();
                 }
             } else {
@@ -104,7 +118,7 @@ public class BasicMutableRope<B, T extends Sliceable<B, T>> implements Rope<B, T
             line.append("  ");
         }
         if (node instanceof LeafRopeNode) {
-            line.append("|* (").append( ((LeafRopeNode<T>)node).item.toString() ).append(')');
+            line.append("|* (").append( ((LeafRopeNode<T>)node).item().toString() ).append(')');
             out.println(line.toString());
         }
         if (node instanceof IntermediateRopeNode) {
