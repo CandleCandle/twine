@@ -1,10 +1,16 @@
 package uk.me.candle.twine;
 
-public interface Sliceable<B, E extends Sliceable> {
+/**
+ * Provides the minimal interface for sequences of elements.
+ *
+ * @param <B> Type of element that is not dividable. e.g. `Byte` or `Character`
+ * @param <S> Self referential generics. Should be the implementation type.
+ */
+public interface Sliceable<E, S extends Sliceable> {
 
-    E slice(int offset, int length);
+    S slice(int offset, int length);
 
-    B get(int offset);
+    E get(int offset);
 
     int size();
 }
