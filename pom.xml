@@ -5,16 +5,16 @@
     <artifactId>twine</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <url>https://github.com/CandleCandle/twine</url>
+    <name>Twine</name>
+    <description>Rope data structure for any type of element.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
-
     <dependencies>
-
-        <!-- test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -55,6 +55,32 @@
             </plugin>
         </plugins>
     </build>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git@github.com:CandleCandle/twine.git</connection>
+		<developerConnection>scm:git:git@github.com:CandleCandle/twine.git</developerConnection>
+		<url>https://github.com/CandleCandle/twine</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
     <profiles>
 	    <profile>
 			<id>release</id>
@@ -87,7 +113,7 @@
 							</execution>
 						</executions>
 					</plugin>
-<!--					<plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 						<version>1.6</version>
@@ -100,7 +126,7 @@
 								</goals>
 							</execution>
 						</executions>
-					</plugin>-->
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
