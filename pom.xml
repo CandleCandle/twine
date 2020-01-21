@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.me.candle</groupId>
     <artifactId>twine</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <url>https://github.com/CandleCandle/twine</url>
     <name>Twine</name>
@@ -68,7 +68,7 @@
 		<connection>scm:git:git@github.com:CandleCandle/twine.git</connection>
 		<developerConnection>scm:git:git@github.com:CandleCandle/twine.git</developerConnection>
 		<url>https://github.com/CandleCandle/twine</url>
-      <tag>twine-0.0.4</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <distributionManagement>
