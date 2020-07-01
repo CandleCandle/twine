@@ -96,9 +96,18 @@ public class BasicMutableRope<B, T extends Sliceable<B, T>> implements Rope<B, T
                     first.append(item);
                     sizeFirst = potentialNewLength;
                 } else {
-                    IntermediateRopeNode split = new LeafRopeNode(item).split(position - sizeFirst);
-                    first.append(((LeafRopeNode)split.left()).item());
-                    second.append(((LeafRopeNode)split.right()).item());
+                    int slicePosition = position - sizeFirst;
+                    // If we would generate a zero-length item, then append the
+                    // whole item to either the first or second as appropriate.
+                    if (slicePosition == 0) {
+                        second.append(item);
+                    } else if (slicePosition == item.size()) {
+                        first.append(item);
+                    } else {
+                        IntermediateRopeNode<T> split = new LeafRopeNode(item).split(slicePosition);
+                        first.append(((LeafRopeNode)split.left()).item());
+                        second.append(((LeafRopeNode)split.right()).item());
+                    }
                     sizeFirst = first.size();
                 }
             } else {

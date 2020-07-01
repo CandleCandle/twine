@@ -1,10 +1,17 @@
 package uk.me.candle.twine;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -125,6 +132,28 @@ public class BasicMutableRopeTest {
         Rope<Character, CharSeqSliceable> undertest = new BasicMutableRope<>(new CharSeqSliceable("abcd"), new CharSeqSliceable("efgh"), new CharSeqSliceable("ijkl"));
         Rope<Character, CharSeqSliceable> result = undertest.delete(6, 2); // should remove "gh"
         assertThat(ropeToString(result), is("abcdefijkl"));
+    }
+
+    @Test
+    void itShouldNotGenerateZeroLengthEntries() throws Exception {
+        Rope<Character, CharSeqSliceable> undertest = new BasicMutableRope<>(
+                new CharSeqSliceable("abcd"),
+                new CharSeqSliceable("efgh"),
+                new CharSeqSliceable("ijkl"));
+        List<Rope<Character, CharSeqSliceable>> split1 = undertest.split(6);
+        List<Rope<Character, CharSeqSliceable>> split2 = split1.get(1).split(2);
+
+        List<Rope<Character, CharSeqSliceable>> allRopes = new ArrayList<>();
+        allRopes.addAll(split1);
+        allRopes.addAll(split2);
+        List<Integer> sizes = allRopes.stream().flatMap(
+            r -> StreamSupport.stream(
+                    Spliterators.spliteratorUnknownSize(r.iterator(), Spliterator.ORDERED),
+                    false)
+            ).map(css -> css.size())
+            .collect(Collectors.toList())
+            ;
+        assertThat(sizes, everyItem(greaterThan(0)));
     }
 
     @Test
